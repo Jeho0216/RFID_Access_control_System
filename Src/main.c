@@ -57,6 +57,7 @@ UART_HandleTypeDef huart3;
 /* Private variables ---------------------------------------------------------*/
 unsigned char card_id[5];
 unsigned char card_id_buf[20];
+unsigned char card_id_prev[20];
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -141,11 +142,14 @@ int main(void)
   while (1)
   {
 	  if(MFRC522_Check(card_id) == MI_OK){
-		  printf( "[%02x-%02x-%02x-%02x-%02x]\n", card_id[0], card_id[1], card_id[2], card_id[3], card_id[4]);
 		  sprintf(card_id_buf, "%02x-%02x-%02x-%02x-%02x", card_id[0], card_id[1], card_id[2], card_id[3], card_id[4]);
-		  I2C_LCD_write_string_XY(1, 0, card_id_buf);
-		  HAL_Delay(10);
 
+		  if(strcmp(card_id_buf, card_id_prev) != 0){
+			  printf("%s\n", card_id_buf);
+			  I2C_LCD_write_string_XY(1, 0, card_id_buf);
+			  strcpy(card_id_prev, card_id_buf);
+			  HAL_Delay(10);
+		  }
 	  }
   /* USER CODE END WHILE */
 
